@@ -1,0 +1,395 @@
+<title>Turbofan Alert Scorecard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (~72ch) with full-width chart panels; scorecard first, method after. */
+:root {
+  --bg: #f6f7f8;
+  --panel: #ffffff;
+  --ink: #12161b;
+  --ink-2: #4a525c;
+  --ink-3: #7a838d;
+  --rule: #dde1e6;
+  --grid: #eceef1;
+  --accent: #1f5fa8;
+  --s1: #2a78d6;  /* predicted / series 1 */
+  --s2: #eb6834;  /* series 2 */
+  --s3: #1baf7a;  /* series 3 */
+  --good: #0ca30c; --warn: #fab219; --serious: #ec835a; --critical: #d03b3b;
+  --quiet: #b9c0c8; --pending: #8fb3dc;
+  --display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #13171b; --panel: #1b2026; --ink: #eef1f4; --ink-2: #b4bcc5; --ink-3: #848d97;
+  --rule: #2d343c; --grid: #252b32; --accent: #6ea8ec;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --quiet: #4f5862; --pending: #3f6a9c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #13171b; --panel: #1b2026; --ink: #eef1f4; --ink-2: #b4bcc5; --ink-3: #848d97;
+  --rule: #2d343c; --grid: #252b32; --accent: #6ea8ec;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --quiet: #4f5862; --pending: #3f6a9c; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 44px; }
+.prose { max-width: 70ch; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.6rem; font-weight: 600; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; }
+.stack { display: grid; gap: 14px; }
+.eyebrow { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 1.08rem; color: var(--ink-2); }
+.meta { font: 0.8rem var(--mono); color: var(--ink-3); }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* scorecard */
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .tiers { grid-template-columns: 1fr; } }
+.tier { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.tier header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.chip { font: 600 0.72rem/1 var(--mono); letter-spacing: 0.08em; padding: 5px 8px; border-radius: 3px; border: 1px solid currentColor; }
+.chip.watch { color: var(--accent); } .chip.plan { color: #b97800; } .chip.urgent { color: var(--critical); }
+:root[data-theme="dark"] .chip.plan { color: var(--warn); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.plan { color: var(--warn); } }
+.rule-line { font: 0.82rem var(--mono); color: var(--ink-2); }
+.big { font: 600 2.4rem/1 var(--display); font-variant-numeric: tabular-nums; }
+.big small { font: 500 0.9rem var(--body); color: var(--ink-2); margin-left: 6px; }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 0.9rem; }
+.kv dt { color: var(--ink-2); white-space: nowrap; } .kv dd { margin: 0; text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.bar { display: flex; height: 10px; gap: 2px; border-radius: 2px; overflow: hidden; }
+.bar span { display: block; height: 100%; }
+
+/* tables */
+.tablebox { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; min-width: 640px; }
+th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--rule); font-variant-numeric: tabular-nums; white-space: nowrap; }
+th { font: 500 0.72rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+tbody tr:last-child td { border-bottom: 0; }
+#dsRows tr:not(.grp) td { border-bottom-color: transparent; }
+#dsRows tr.grp td { border-bottom-color: var(--rule); }
+tr.total td { font-weight: 600; border-top: 2px solid var(--rule); }
+td.zero { color: var(--ink-3); }
+
+/* legend + outcome key */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.legend i.line { height: 2px; width: 16px; vertical-align: 3px; border-radius: 0; }
+.legend i.dash { height: 0; width: 16px; vertical-align: 3px; border-top: 2px dashed var(--ink-3); background: none; border-radius: 0; }
+.defs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; font-size: 0.9rem; }
+@media (max-width: 640px) { .defs { grid-template-columns: 1fr; } }
+.defs div { display: grid; grid-template-columns: 14px 1fr; gap: 10px; align-items: start; }
+.defs i { width: 12px; height: 12px; border-radius: 2px; margin-top: 6px; }
+.defs b { font-weight: 600; }
+
+/* charts */
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.seg button { font: 500 0.78rem var(--mono); background: transparent; color: var(--ink-2); border: 0; padding: 6px 10px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+.seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font: 11px var(--mono); fill: var(--ink-3); }
+.chart .lbl { fill: var(--ink-2); font-size: 11px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font: 0.78rem/1.45 var(--mono); padding: 7px 9px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 2; }
+.caption { font-size: 0.86rem; color: var(--ink-2); max-width: 75ch; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+
+ul.tight { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.note { border-left: 3px solid var(--rule); padding-left: 14px; color: var(--ink-2); font-size: 0.92rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header class="stack prose">
+  <span class="eyebrow">NASA C-MAPSS · FD001–FD004 · 1,416 simulated turbofan engines</span>
+  <h1>Turbofan Alert Scorecard</h1>
+  <p class="lede">Anomaly detection and remaining-life prediction on NASA's turbofan sensor data, turned into three maintenance alert tiers and scored against when each engine actually failed.</p>
+  <p class="meta">Jose Thomas · October 2026 · gradient-boosted RUL model + per-engine Mahalanobis anomaly score</p>
+</header>
+
+<section class="stack">
+  <div class="stack prose">
+    <h2>Results on the held-out engines</h2>
+    <p>These numbers come from the 707 NASA test engines, which the models and thresholds never saw. Every threshold was chosen on the training engines only. The headline: the <b>Plan maintenance</b> alert caught all 173 engines that reached their maintenance window inside the data, with a median of 32 cycles of warning, and fired early on 3 engines.</p>
+  </div>
+  <div class="tiers" id="tiers"></div>
+  <div class="legend" id="outcomeLegend"></div>
+</section>
+
+<section class="stack">
+  <div class="stack prose">
+    <h2>How an alert is judged</h2>
+    <p>Each engine gets one decision per tier: the first time that alert fires. That moment is compared with the engine's real failure cycle. Every tier has a window. An alert that fires inside the window, with enough lead time to act, is a catch. An alert that fires before the window opens is false, because it would pull a healthy engine into the shop.</p>
+  </div>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Tier</th><th>Fires when</th><th>Window (cycles left)</th><th>Min. lead</th><th>Persistence</th></tr></thead>
+      <tbody id="policyRows"></tbody>
+    </table>
+  </div>
+  <div class="defs" id="defs"></div>
+  <p class="note">The NASA test trajectories stop before failure, so two outcomes exist only there. <b>Quiet, correct</b> means the engine never got near failure in the observed data and no alert fired: a true negative. <b>Too soon to tell</b> means the engine entered its window but the data ends before the window closes, with no alert yet. Those engines are neither caught nor missed, and they are left out of the detection rate.</p>
+</section>
+
+<section class="stack">
+  <div class="stack prose">
+    <h2>One engine, start to failure</h2>
+    <p>A typical cross-validated training engine, scored by a model that never trained on it. The anomaly score departs from its healthy baseline long before the RUL model turns pessimistic; that gap is why WATCH gives the most warning and PLAN gives the most reliable warning.</p>
+  </div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3 id="exTitle">Engine</h3>
+      <div class="seg" role="group" aria-label="Example engine">
+        <button type="button" id="exFD001" aria-pressed="true">FD001</button>
+        <button type="button" id="exFD003" aria-pressed="false">FD003</button>
+      </div>
+    </div>
+    <div class="legend"><span><i class="line" style="background:var(--s1)"></i>Predicted RUL</span><span><i class="line" style="background:var(--ink-3)"></i>Actual RUL (capped at 125)</span><span><i class="dash"></i>First alert</span></div>
+    <div class="chart" id="exRul"></div>
+    <div class="legend"><span><i class="line" style="background:var(--s2)"></i>Anomaly score (smoothed)</span><span><i class="dash"></i>Healthy threshold</span></div>
+    <div class="chart" id="exAnom"></div>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="stack prose">
+    <h2>Choosing the PLAN threshold</h2>
+    <p>The PLAN alert fires when predicted RUL drops to a threshold <i>T</i>. Raising <i>T</i> buys warning time but starts flagging engines that still have more than 60 cycles left. I swept <i>T</i> on cross-validated predictions, scored each value as 10 × (late + missed) + 1 × false, and took the middle of the lowest-cost range so the setting isn't perched on the edge where it tips over.</p>
+  </div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3 id="swTitle">Threshold sweep</h3>
+      <div class="seg" role="group" aria-label="Dataset" id="swTabs"></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--good)"></i>Caught</span><span><i style="background:var(--serious)"></i>False (premature)</span><span><i style="background:var(--warn)"></i>Late or missed</span><span><i class="dash"></i>Chosen T</span></div>
+    <div class="chart" id="sweep"></div>
+    <p class="caption" id="swCap"></p>
+  </div>
+</section>
+
+<section class="stack">
+  <div class="stack prose">
+    <h2>How much warning each tier gives</h2>
+    <p>Lead time of every caught alert on the held-out engines, all four datasets pooled. For a maintenance planner: eight in ten PLAN alerts leave between 23 and 43 cycles to arrange the shop visit.</p>
+  </div>
+  <div class="tiers" id="leads"></div>
+</section>
+
+<section class="stack">
+  <div class="stack prose">
+    <h2>By dataset</h2>
+    <p>FD001 and FD003 fly one operating condition; FD002 and FD004 fly six, and FD003 and FD004 mix two fault modes (HPC and fan). FD004 is the only dataset with premature PLAN alerts, which fits: it combines both complications.</p>
+  </div>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Data</th><th>Tier</th><th>Caught</th><th>Late</th><th>Missed</th><th>False</th><th>Quiet</th><th>Too soon</th><th>Median lead</th></tr></thead>
+      <tbody id="dsRows"></tbody>
+    </table>
+  </div>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Data</th><th>Regimes</th><th>Sensors used</th><th>PLAN T</th><th>Anomaly thr.</th><th>Test RMSE, last cycle</th><th>Test RMSE, all cycles</th><th>NASA score</th><th>CV RMSE, all cycles</th></tr></thead>
+      <tbody id="rulRows"></tbody>
+    </table>
+  </div>
+  <p class="caption">RMSE is in cycles against RUL capped at 125, the usual convention for this benchmark. "Last cycle" is the standard published C-MAPSS metric. The NASA score penalizes late predictions more than early ones; lower is better.</p>
+</section>
+
+<section class="stack prose">
+  <h2>Method</h2>
+  <ul class="tight">
+    <li><b>Operating regimes.</b> FD002 and FD004 sensors swing with altitude, Mach and throttle. Each cycle is assigned to one of six regimes by clustering the three operating settings, and every sensor is standardized within its regime against healthy early-life cycles.</li>
+    <li><b>Anomaly score.</b> Each engine is compared with its own first 20 cycles, which removes manufacturing and initial-wear differences between engines. The score is the Mahalanobis distance of that deviation, using the noise covariance of still-healthy cycles, smoothed with an EWMA. The threshold is the 99.5th percentile on early-life training cycles. Alerts are suppressed during the 20-cycle warm-up.</li>
+    <li><b>Remaining-life model.</b> Histogram gradient boosting on 49 past-only features: regime-normalized sensors, 10- and 30-cycle rolling means, 20-cycle slopes, the anomaly score and its trend, and cycle count. Target is RUL capped at 125.</li>
+    <li><b>Validation.</b> Five-fold cross-validation grouped by engine on the 709 run-to-failure training engines, with all preprocessing refit inside each fold. Thresholds come from these out-of-fold predictions; the NASA test set is scored once at the end.</li>
+    <li><b>Leakage checks.</b> No label-derived column reaches the model, and deleting an engine's future cycles leaves its earlier predictions identical. Outcome counts were recomputed by separate code and matched in all 24 dataset × tier × split cells.</li>
+  </ul>
+</section>
+
+<section class="stack prose">
+  <h2>Limits</h2>
+  <ul class="tight">
+    <li>Cross-validated results are slightly optimistic because the PLAN threshold was tuned on them. The held-out test results carry no such bias, and they agree.</li>
+    <li>The windows (150, 60 and 30 cycles) and the 10:1 cost ratio are stated assumptions. A real fleet would set them from shop lead times and the cost of an unscheduled removal.</li>
+    <li>WATCH works cleanly on FD001 but fires with under 30 cycles left on 12–32% of engines in FD002–FD004. Regime normalization and the second fault mode both add noise, which pushes the healthy threshold up. PLAN is unaffected.</li>
+    <li>C-MAPSS is simulated: every engine fails by gradual degradation, with no sensor dropouts or sudden failures. Real data would need handling for both.</li>
+  </ul>
+</section>
+
+</div>
+
+<script>
+const D = __DATA__;
+const $ = (s) => document.querySelector(s);
+const SVGNS = "http://www.w3.org/2000/svg";
+const OUT = [
+  ["caught", "Caught", "var(--good)", "Alert fired inside the window with at least the minimum lead time."],
+  ["late", "Late", "var(--warn)", "Alert fired, but with less than the minimum lead time to act."],
+  ["missed", "Missed", "var(--critical)", "The engine failed, or got within the minimum lead, with no alert."],
+  ["false", "False (premature)", "var(--serious)", "Alert fired before the window opened, on an engine with life to spare."],
+  ["pending", "Too soon to tell", "var(--pending)", "Test data ends inside the window before any alert. Not judged."],
+  ["quiet_ok", "Quiet, correct", "var(--quiet)", "Engine never neared failure in the data and no alert fired."],
+];
+const TIERS = [
+  {k: "WATCH", cls: "watch", name: "Watch", rule: "anomaly score > healthy threshold", W: 150, L: 30, P: 5},
+  {k: "PLAN", cls: "plan", name: "Plan maintenance", rule: "predicted RUL ≤ T (per dataset, 30–42)", W: 60, L: 10, P: 3},
+  {k: "URGENT", cls: "urgent", name: "Urgent", rule: "predicted RUL ≤ 20", W: 30, L: 3, P: 3},
+];
+const sum = (split, tier, key) => D.results.reduce((a, r) => a + (r[split][tier][key] || 0), 0);
+const fmt = (x) => x.toLocaleString("en-US");
+
+// --- scorecard
+$("#tiers").innerHTML = TIERS.map(t => {
+  const c = Object.fromEntries(OUT.map(([k]) => [k, sum("test", t.k, k)]));
+  const judged = c.caught + c.late + c.missed, fired = c.caught + c.late + c.false;
+  const lead = D.totals["test_" + t.k].lead_med;
+  const cv = Object.fromEntries(OUT.map(([k]) => [k, sum("cv_train", t.k, k)]));
+  const total = OUT.reduce((a, [k]) => a + c[k], 0);
+  const bar = OUT.map(([k, , col]) => c[k] ? `<span style="width:${100 * c[k] / total}%;background:${col}" title="${k}: ${c[k]}"></span>` : "").join("");
+  return `<article class="tier">
+    <header><h3>${t.name}</h3><span class="chip ${t.cls}">${t.k}</span></header>
+    <div class="rule-line">${t.rule}</div>
+    <div class="big">${c.caught} / ${judged}<small>failures caught</small></div>
+    <div class="bar" role="img" aria-label="Outcomes for ${t.name}">${bar}</div>
+    <dl class="kv">
+      <dt>Late · missed</dt><dd>${c.late} · ${c.missed}</dd>
+      <dt>False alerts</dt><dd>${c.false} of ${fired} fired</dd>
+      <dt>Median warning</dt><dd>${lead} cycles</dd>
+      <dt>Quiet, correct</dt><dd>${c.quiet_ok}</dd>
+      <dt>Too soon to tell</dt><dd>${c.pending}</dd>
+      <dt>CV, 709 engines</dt><dd>${cv.caught} caught · ${cv.false} false</dd>
+    </dl>
+  </article>`;
+}).join("");
+$("#outcomeLegend").innerHTML = OUT.map(([, n, col]) => `<span><i style="background:${col}"></i>${n}</span>`).join("");
+$("#defs").innerHTML = OUT.map(([, n, col, d]) => `<div><i style="background:${col}"></i><span><b>${n}.</b> ${d}</span></div>`).join("");
+$("#policyRows").innerHTML = TIERS.map(t => `<tr><td><span class="chip ${t.cls}">${t.k}</span></td><td>${t.rule}</td><td>≤ ${t.W}</td><td>≥ ${t.L}</td><td>${t.P} cycles in a row</td></tr>`).join("");
+
+// --- per-dataset tables
+const cell = (v) => `<td class="${v ? "" : "zero"}">${v}</td>`;
+$("#dsRows").innerHTML = D.results.flatMap(r => TIERS.map((t, i) => {
+  const x = r.test[t.k];
+  return `<tr${i === 2 ? ' class="grp"' : ""}><td>${i === 0 ? r.dataset : ""}</td><td><span class="chip ${t.cls}">${t.k}</span></td>${cell(x.caught)}${cell(x.late)}${cell(x.missed)}${cell(x.false)}${cell(x.quiet_ok)}${cell(x.pending)}<td>${x.lead_median ?? "–"}</td></tr>`;
+})).join("");
+$("#rulRows").innerHTML = D.results.map(r => `<tr><td>${r.dataset}</td><td>${r.conditions}</td><td>${r.sensors_used.length}</td><td>${r.T_plan}</td><td>${r.anom_threshold_test.toFixed(2)}</td><td>${r.test.rul_last_cycle.rmse.toFixed(1)}</td><td>${r.test.rul_all_cycles.rmse.toFixed(1)}</td><td>${fmt(Math.round(r.test.rul_last_cycle.nasa_score))}</td><td>${r.cv_train.rul_all_cycles.rmse.toFixed(1)}</td></tr>`).join("");
+
+// --- tiny SVG helpers
+function el(tag, attrs = {}, parent) { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function niceTicks(lo, hi, n = 5) {
+  const span = hi - lo, step0 = span / n, mag = 10 ** Math.floor(Math.log10(step0));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => span / s <= n) || mag * 10;
+  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6)); return out;
+}
+function frame(host, W, H, m, x0, x1, y0, y1, xlab, ylab) {
+  host.innerHTML = "";
+  const svg = el("svg", {viewBox: `0 0 ${W} ${H}`, role: "img"}, host);
+  const X = (v) => m.l + (v - x0) / (x1 - x0) * (W - m.l - m.r);
+  const Y = (v) => H - m.b - (v - y0) / (y1 - y0) * (H - m.t - m.b);
+  niceTicks(y0, y1, 4).forEach(v => {
+    el("line", {x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1}, svg);
+    el("text", {x: m.l - 8, y: Y(v) + 4, "text-anchor": "end"}, svg).textContent = v;
+  });
+  niceTicks(x0, x1, 6).forEach(v => { el("text", {x: X(v), y: H - m.b + 16, "text-anchor": "middle"}, svg).textContent = v; });
+  el("line", {x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: "var(--rule)"}, svg);
+  if (xlab) el("text", {x: W - m.r, y: H - 4, "text-anchor": "end", class: "lbl"}, svg).textContent = xlab;
+  if (ylab) el("text", {x: m.l, y: m.t - 10, class: "lbl"}, svg).textContent = ylab;
+  return {svg, X, Y};
+}
+function path(svg, xs, ys, X, Y, attrs) {
+  const d = xs.map((x, i) => `${i ? "L" : "M"}${X(x).toFixed(1)},${Y(ys[i]).toFixed(1)}`).join("");
+  return el("path", {d, fill: "none", "stroke-width": 2, "stroke-linejoin": "round", ...attrs}, svg);
+}
+function hover(host, svg, W, H, m, X, xs, render) {
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; host.appendChild(tip);
+  const guide = el("line", {y1: m.t, y2: H - m.b, stroke: "var(--ink-3)", "stroke-width": 1, visibility: "hidden"}, svg);
+  const hit = el("rect", {x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent"}, svg);
+  const move = (ev) => {
+    const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) / r.width * W;
+    let best = 0; xs.forEach((x, i) => { if (Math.abs(X(x) - px) < Math.abs(X(xs[best]) - px)) best = i; });
+    const gx = X(xs[best]); guide.setAttribute("x1", gx); guide.setAttribute("x2", gx); guide.setAttribute("visibility", "visible");
+    tip.innerHTML = render(best); tip.hidden = false;
+    tip.style.left = Math.min(Math.max(gx / W * r.width, 70), r.width - 70) + "px"; tip.style.top = (m.t / H * r.height + 8) + "px";
+  };
+  hit.addEventListener("pointermove", move); hit.addEventListener("pointerleave", () => { tip.hidden = true; guide.setAttribute("visibility", "hidden"); });
+}
+const TIERCOL = {WATCH: "var(--accent)", PLAN: "var(--warn)", URGENT: "var(--critical)"};
+function alertMarks(svg, ex, X, H, m, label) {
+  for (const t of ["WATCH", "PLAN", "URGENT"]) {
+    const c = ex.first[t]; if (c == null) continue;
+    el("line", {x1: X(c), x2: X(c), y1: m.t, y2: H - m.b, stroke: TIERCOL[t], "stroke-width": 1.5, "stroke-dasharray": "4 3"}, svg);
+    if (label) el("text", {x: X(c) - 4, y: m.t + 10 + (t === "URGENT" ? 14 : 0), "text-anchor": "end", class: "lbl"}, svg).textContent = `${t} · ${ex.fail - c} left`;
+  }
+}
+
+// --- example engine
+function drawExample(fd) {
+  const ex = D.examples[fd];
+  ["FD001", "FD003"].forEach(k => $("#ex" + k).setAttribute("aria-pressed", k === fd));
+  $("#exTitle").textContent = `${fd} engine ${ex.unit} · failed at cycle ${ex.fail}`;
+  const W = 900, m = {l: 44, r: 16, t: 26, b: 34}, x1 = ex.cycle[ex.cycle.length - 1];
+  let H = 260, f = frame($("#exRul"), W, H, m, 1, x1, 0, 140, "cycle", "cycles of life left");
+  alertMarks(f.svg, ex, f.X, H, m, true);
+  path(f.svg, ex.cycle, ex.true, f.X, f.Y, {stroke: "var(--ink-3)"});
+  path(f.svg, ex.cycle, ex.pred, f.X, f.Y, {stroke: "var(--s1)"});
+  hover($("#exRul"), f.svg, W, H, m, f.X, ex.cycle, i => `cycle ${ex.cycle[i]}<br>predicted ${ex.pred[i].toFixed(0)} · actual ${ex.true[i]}`);
+  H = 200; const amax = Math.max(...ex.anom, ex.thr) * 1.08;
+  const g = frame($("#exAnom"), W, H, m, 1, x1, 0, amax, "cycle", "anomaly score");
+  alertMarks(g.svg, ex, g.X, H, m, false);
+  el("line", {x1: m.l, x2: W - m.r, y1: g.Y(ex.thr), y2: g.Y(ex.thr), stroke: "var(--ink-3)", "stroke-width": 1.5, "stroke-dasharray": "5 4"}, g.svg);
+  path(g.svg, ex.cycle, ex.anom, g.X, g.Y, {stroke: "var(--s2)"});
+  hover($("#exAnom"), g.svg, W, H, m, g.X, ex.cycle, i => `cycle ${ex.cycle[i]}<br>score ${ex.anom[i].toFixed(2)} · threshold ${ex.thr.toFixed(2)}`);
+}
+["FD001", "FD003"].forEach(k => $("#ex" + k).addEventListener("click", () => drawExample(k)));
+
+// --- threshold sweep
+const FDS = D.results.map(r => r.dataset);
+$("#swTabs").innerHTML = FDS.map(f => `<button type="button" data-fd="${f}" aria-pressed="false">${f}</button>`).join("");
+function drawSweep(fd) {
+  $("#swTabs").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.fd === fd));
+  const s = D.sweep[fd], r = D.results.find(x => x.dataset === fd), n = s.caught[0] + s.late[0] + s.missed[0] + s.false[0];
+  const lm = s.late.map((v, i) => v + s.missed[i]);
+  const W = 900, H = 280, m = {l: 44, r: 16, t: 26, b: 34};
+  const f = frame($("#sweep"), W, H, m, 10, 100, 0, n, "PLAN threshold T (predicted cycles left)", `engines (of ${n})`);
+  el("line", {x1: f.X(r.T_plan), x2: f.X(r.T_plan), y1: m.t, y2: H - m.b, stroke: "var(--ink-2)", "stroke-width": 1.5, "stroke-dasharray": "5 4"}, f.svg);
+  el("text", {x: f.X(r.T_plan) + 6, y: m.t + 10, class: "lbl"}, f.svg).textContent = `chosen T = ${r.T_plan}`;
+  path(f.svg, s.T, lm, f.X, f.Y, {stroke: "var(--warn)"});
+  path(f.svg, s.T, s.false, f.X, f.Y, {stroke: "var(--serious)"});
+  path(f.svg, s.T, s.caught, f.X, f.Y, {stroke: "var(--good)"});
+  hover($("#sweep"), f.svg, W, H, m, f.X, s.T, i => `T = ${s.T[i]}<br>caught ${s.caught[i]} · false ${s.false[i]} · late/missed ${lm[i]}<br>median lead ${s.lead_median[i] ?? "–"}`);
+  const i = s.T.indexOf(r.T_plan);
+  $("#swCap").textContent = `${fd}, cross-validated on ${n} run-to-failure engines. At T = ${r.T_plan}: ${s.caught[i]} caught, ${s.false[i]} false, ${lm[i]} late or missed, median lead ${s.lead_median[i]} cycles. Late alerts stop at T = ${s.T[lm.findIndex(v => v === 0)]}; ${s.false[0] > 0 ? `${s.false[0]} engines are flagged early at every threshold, because the model misjudges them outright, and more premature alerts appear from` : "premature alerts first appear at"} T = ${s.T[s.false.findIndex(v => v > s.false[0])]}.`;
+}
+$("#swTabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) drawSweep(b.dataset.fd); });
+
+// --- lead histograms
+function drawLeads() {
+  const host = $("#leads"); host.innerHTML = "";
+  for (const t of TIERS) {
+    const v = D.leads[t.k]; if (!v.length) continue;
+    const box = document.createElement("div"); box.className = "panel";
+    const med = D.totals["test_" + t.k].lead_med;
+    box.innerHTML = `<div class="panel-head"><h3>${t.name}</h3><span class="chip ${t.cls}">${t.k}</span></div><div class="chart"></div><p class="caption">${v.length} caught engines · median ${med} cycles of warning</p>`;
+    host.appendChild(box);
+    const bw = t.k === "WATCH" ? 10 : 2, lo = t.L, hi = t.W, bins = [];
+    for (let b = lo; b <= hi; b += bw) bins.push([b, b + bw, v.filter(x => x >= b && x < b + bw).length]);
+    const W = 300, H = 170, m = {l: 30, r: 8, t: 22, b: 34}, ymax = Math.max(...bins.map(b => b[2])) * 1.1;
+    const f = frame(box.querySelector(".chart"), W, H, m, lo, hi + bw, 0, ymax, "cycles of warning", "engines");
+    bins.forEach(([a, b, c]) => { if (!c) return;
+      const rect = el("rect", {x: f.X(a) + 1, width: Math.max(f.X(b) - f.X(a) - 2, 1), y: f.Y(c), height: f.Y(0) - f.Y(c), fill: "var(--s1)", rx: 1.5}, f.svg);
+      el("title", {}, rect).textContent = `${a}–${b - 1} cycles: ${c} engines`; });
+    el("line", {x1: f.X(med), x2: f.X(med), y1: m.t, y2: H - m.b, stroke: "var(--ink)", "stroke-width": 1.5, "stroke-dasharray": "4 3"}, f.svg);
+    el("text", {x: f.X(med) + 5, y: m.t + 8, class: "lbl"}, f.svg).textContent = `median ${med}`;
+  }
+}
+drawExample("FD001"); drawSweep("FD001"); drawLeads();
+</script>

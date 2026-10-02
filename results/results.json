@@ -1,0 +1,564 @@
+[
+ {
+  "dataset": "FD001",
+  "sensors_used": [
+   "s2",
+   "s3",
+   "s4",
+   "s7",
+   "s8",
+   "s9",
+   "s11",
+   "s12",
+   "s13",
+   "s14",
+   "s15",
+   "s17",
+   "s20",
+   "s21"
+  ],
+  "conditions": 1,
+  "T_plan": 34,
+  "T_urgent": 20,
+  "anom_threshold_test": 1.2120336093517619,
+  "cv_train": {
+   "WATCH": {
+    "caught": 91,
+    "late": 0,
+    "missed": 0,
+    "false": 9,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 91,
+    "detection_rate": 1.0,
+    "alerts_fired": 100,
+    "false_alert_share": 0.09,
+    "lead_median": 101.0,
+    "lead_p10": 71.0,
+    "lead_p90": 132.0
+   },
+   "PLAN": {
+    "caught": 100,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 100,
+    "detection_rate": 1.0,
+    "alerts_fired": 100,
+    "false_alert_share": 0.0,
+    "lead_median": 30.0,
+    "lead_p10": 25.0,
+    "lead_p90": 35.0
+   },
+   "URGENT": {
+    "caught": 100,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 100,
+    "detection_rate": 1.0,
+    "alerts_fired": 100,
+    "false_alert_share": 0.0,
+    "lead_median": 16.0,
+    "lead_p10": 13.0,
+    "lead_p90": 21.10000000000001
+   },
+   "rul_last_cycle": {
+    "rmse": 2.3005643743592645,
+    "mae": 1.7252640879869936,
+    "nasa_score": 20.318145647347194
+   },
+   "rul_all_cycles": {
+    "rmse": 9.57949690106956,
+    "mae": 6.133445279986441,
+    "nasa_score": 32460.720537871297
+   },
+   "watch_cycle_false_rate": 0.03067594078830034
+  },
+  "test": {
+   "WATCH": {
+    "caught": 65,
+    "late": 0,
+    "missed": 0,
+    "false": 5,
+    "quiet_ok": 0,
+    "pending": 30,
+    "failures_judged": 65,
+    "detection_rate": 1.0,
+    "alerts_fired": 70,
+    "false_alert_share": 0.07142857142857142,
+    "lead_median": 108.0,
+    "lead_p10": 77.0,
+    "lead_p90": 139.8
+   },
+   "PLAN": {
+    "caught": 26,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 61,
+    "pending": 13,
+    "failures_judged": 26,
+    "detection_rate": 1.0,
+    "alerts_fired": 26,
+    "false_alert_share": 0.0,
+    "lead_median": 31.5,
+    "lead_p10": 27.0,
+    "lead_p90": 36.5
+   },
+   "URGENT": {
+    "caught": 11,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 75,
+    "pending": 14,
+    "failures_judged": 11,
+    "detection_rate": 1.0,
+    "alerts_fired": 11,
+    "false_alert_share": 0.0,
+    "lead_median": 16.0,
+    "lead_p10": 14.0,
+    "lead_p90": 19.0
+   },
+   "rul_last_cycle": {
+    "rmse": 12.133407826625211,
+    "mae": 9.026654510401448,
+    "nasa_score": 246.34064159239466
+   },
+   "rul_all_cycles": {
+    "rmse": 9.14625973276299,
+    "mae": 5.8227862101630885,
+    "nasa_score": 17531.396632361728
+   },
+   "watch_cycle_false_rate": 0.013955984970477724
+  }
+ },
+ {
+  "dataset": "FD002",
+  "sensors_used": [
+   "s2",
+   "s3",
+   "s4",
+   "s6",
+   "s7",
+   "s8",
+   "s9",
+   "s10",
+   "s11",
+   "s12",
+   "s13",
+   "s14",
+   "s15",
+   "s16",
+   "s17",
+   "s20",
+   "s21"
+  ],
+  "conditions": 6,
+  "T_plan": 30,
+  "T_urgent": 20,
+  "anom_threshold_test": 2.78877999737196,
+  "cv_train": {
+   "WATCH": {
+    "caught": 187,
+    "late": 67,
+    "missed": 0,
+    "false": 6,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 254,
+    "detection_rate": 0.7362204724409449,
+    "alerts_fired": 260,
+    "false_alert_share": 0.023076923076923078,
+    "lead_median": 49.0,
+    "lead_p10": 33.0,
+    "lead_p90": 84.60000000000002
+   },
+   "PLAN": {
+    "caught": 260,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 260,
+    "detection_rate": 1.0,
+    "alerts_fired": 260,
+    "false_alert_share": 0.0,
+    "lead_median": 25.0,
+    "lead_p10": 20.0,
+    "lead_p90": 34.0
+   },
+   "URGENT": {
+    "caught": 260,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 260,
+    "detection_rate": 1.0,
+    "alerts_fired": 260,
+    "false_alert_share": 0.0,
+    "lead_median": 16.0,
+    "lead_p10": 12.0,
+    "lead_p90": 22.0
+   },
+   "rul_last_cycle": {
+    "rmse": 3.087094161337177,
+    "mae": 2.4400986677683285,
+    "nasa_score": 78.46042522528397
+   },
+   "rul_all_cycles": {
+    "rmse": 12.457765479021067,
+    "mae": 8.376320198228203,
+    "nasa_score": 156192.4955757267
+   },
+   "watch_cycle_false_rate": 0.0024549918166939444
+  },
+  "test": {
+   "WATCH": {
+    "caught": 79,
+    "late": 15,
+    "missed": 0,
+    "false": 1,
+    "quiet_ok": 36,
+    "pending": 128,
+    "failures_judged": 94,
+    "detection_rate": 0.8404255319148937,
+    "alerts_fired": 95,
+    "false_alert_share": 0.010526315789473684,
+    "lead_median": 63.0,
+    "lead_p10": 37.0,
+    "lead_p90": 99.2
+   },
+   "PLAN": {
+    "caught": 62,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 157,
+    "pending": 40,
+    "failures_judged": 62,
+    "detection_rate": 1.0,
+    "alerts_fired": 62,
+    "false_alert_share": 0.0,
+    "lead_median": 26.0,
+    "lead_p10": 21.0,
+    "lead_p90": 34.9
+   },
+   "URGENT": {
+    "caught": 46,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 198,
+    "pending": 15,
+    "failures_judged": 46,
+    "detection_rate": 1.0,
+    "alerts_fired": 46,
+    "false_alert_share": 0.0,
+    "lead_median": 18.0,
+    "lead_p10": 14.0,
+    "lead_p90": 22.0
+   },
+   "rul_last_cycle": {
+    "rmse": 12.242399173390789,
+    "mae": 8.686566009900073,
+    "nasa_score": 715.7679466941504
+   },
+   "rul_all_cycles": {
+    "rmse": 12.314988416246278,
+    "mae": 8.113975386134273,
+    "nasa_score": 80742.23592346517
+   },
+   "watch_cycle_false_rate": 0.000584339696143358
+  }
+ },
+ {
+  "dataset": "FD003",
+  "sensors_used": [
+   "s2",
+   "s3",
+   "s4",
+   "s7",
+   "s8",
+   "s9",
+   "s10",
+   "s11",
+   "s12",
+   "s13",
+   "s14",
+   "s15",
+   "s17",
+   "s20",
+   "s21"
+  ],
+  "conditions": 1,
+  "T_plan": 34,
+  "T_urgent": 20,
+  "anom_threshold_test": 5.661970697620766,
+  "cv_train": {
+   "WATCH": {
+    "caught": 62,
+    "late": 30,
+    "missed": 2,
+    "false": 6,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 94,
+    "detection_rate": 0.6595744680851063,
+    "alerts_fired": 98,
+    "false_alert_share": 0.061224489795918366,
+    "lead_median": 58.5,
+    "lead_p10": 37.0,
+    "lead_p90": 113.59999999999998
+   },
+   "PLAN": {
+    "caught": 100,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 100,
+    "detection_rate": 1.0,
+    "alerts_fired": 100,
+    "false_alert_share": 0.0,
+    "lead_median": 30.0,
+    "lead_p10": 25.9,
+    "lead_p90": 36.10000000000001
+   },
+   "URGENT": {
+    "caught": 100,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 100,
+    "detection_rate": 1.0,
+    "alerts_fired": 100,
+    "false_alert_share": 0.0,
+    "lead_median": 17.0,
+    "lead_p10": 12.9,
+    "lead_p90": 21.0
+   },
+   "rul_last_cycle": {
+    "rmse": 2.037658949901601,
+    "mae": 1.5500912750980596,
+    "nasa_score": 17.851042061824653
+   },
+   "rul_all_cycles": {
+    "rmse": 9.075161739302771,
+    "mae": 5.591450162774296,
+    "nasa_score": 33340.77339330204
+   },
+   "watch_cycle_false_rate": 0.009553478712357217
+  },
+  "test": {
+   "WATCH": {
+    "caught": 27,
+    "late": 1,
+    "missed": 3,
+    "false": 4,
+    "quiet_ok": 0,
+    "pending": 65,
+    "failures_judged": 31,
+    "detection_rate": 0.8709677419354839,
+    "alerts_fired": 32,
+    "false_alert_share": 0.125,
+    "lead_median": 86.0,
+    "lead_p10": 45.8,
+    "lead_p90": 132.4
+   },
+   "PLAN": {
+    "caught": 21,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 59,
+    "pending": 20,
+    "failures_judged": 21,
+    "detection_rate": 1.0,
+    "alerts_fired": 21,
+    "false_alert_share": 0.0,
+    "lead_median": 31.0,
+    "lead_p10": 28.0,
+    "lead_p90": 36.0
+   },
+   "URGENT": {
+    "caught": 12,
+    "late": 0,
+    "missed": 0,
+    "false": 0,
+    "quiet_ok": 80,
+    "pending": 8,
+    "failures_judged": 12,
+    "detection_rate": 1.0,
+    "alerts_fired": 12,
+    "false_alert_share": 0.0,
+    "lead_median": 18.0,
+    "lead_p10": 15.0,
+    "lead_p90": 20.0
+   },
+   "rul_last_cycle": {
+    "rmse": 11.052850494368972,
+    "mae": 8.026137203494079,
+    "nasa_score": 200.77440807431213
+   },
+   "rul_all_cycles": {
+    "rmse": 8.494456542215651,
+    "mae": 4.824044392289369,
+    "nasa_score": 22336.688978926388
+   },
+   "watch_cycle_false_rate": 0.006835722160970232
+  }
+ },
+ {
+  "dataset": "FD004",
+  "sensors_used": [
+   "s2",
+   "s3",
+   "s4",
+   "s7",
+   "s8",
+   "s9",
+   "s10",
+   "s11",
+   "s12",
+   "s13",
+   "s14",
+   "s15",
+   "s16",
+   "s17",
+   "s20",
+   "s21"
+  ],
+  "conditions": 6,
+  "T_plan": 42,
+  "T_urgent": 20,
+  "anom_threshold_test": 2.565480691765721,
+  "cv_train": {
+   "WATCH": {
+    "caught": 178,
+    "late": 40,
+    "missed": 15,
+    "false": 16,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 233,
+    "detection_rate": 0.7639484978540773,
+    "alerts_fired": 234,
+    "false_alert_share": 0.06837606837606838,
+    "lead_median": 65.5,
+    "lead_p10": 36.0,
+    "lead_p90": 109.0
+   },
+   "PLAN": {
+    "caught": 238,
+    "late": 0,
+    "missed": 0,
+    "false": 11,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 238,
+    "detection_rate": 1.0,
+    "alerts_fired": 249,
+    "false_alert_share": 0.04417670682730924,
+    "lead_median": 36.0,
+    "lead_p10": 27.0,
+    "lead_p90": 46.0
+   },
+   "URGENT": {
+    "caught": 239,
+    "late": 1,
+    "missed": 4,
+    "false": 5,
+    "quiet_ok": 0,
+    "pending": 0,
+    "failures_judged": 244,
+    "detection_rate": 0.9795081967213115,
+    "alerts_fired": 245,
+    "false_alert_share": 0.02040816326530612,
+    "lead_median": 15.0,
+    "lead_p10": 9.0,
+    "lead_p90": 22.0
+   },
+   "rul_last_cycle": {
+    "rmse": 7.25541610852971,
+    "mae": 4.0028587800075695,
+    "nasa_score": 342.87259914108586
+   },
+   "rul_all_cycles": {
+    "rmse": 12.770622558566114,
+    "mae": 7.654773590568437,
+    "nasa_score": 466097.7312953366
+   },
+   "watch_cycle_false_rate": 0.015409877478842995
+  },
+  "test": {
+   "WATCH": {
+    "caught": 93,
+    "late": 13,
+    "missed": 1,
+    "false": 15,
+    "quiet_ok": 37,
+    "pending": 89,
+    "failures_judged": 107,
+    "detection_rate": 0.8691588785046729,
+    "alerts_fired": 121,
+    "false_alert_share": 0.12396694214876033,
+    "lead_median": 85.0,
+    "lead_p10": 43.400000000000006,
+    "lead_p90": 127.39999999999999
+   },
+   "PLAN": {
+    "caught": 64,
+    "late": 0,
+    "missed": 0,
+    "false": 3,
+    "quiet_ok": 155,
+    "pending": 26,
+    "failures_judged": 64,
+    "detection_rate": 1.0,
+    "alerts_fired": 67,
+    "false_alert_share": 0.04477611940298507,
+    "lead_median": 36.5,
+    "lead_p10": 29.0,
+    "lead_p90": 48.7
+   },
+   "URGENT": {
+    "caught": 31,
+    "late": 0,
+    "missed": 0,
+    "false": 2,
+    "quiet_ok": 193,
+    "pending": 22,
+    "failures_judged": 31,
+    "detection_rate": 1.0,
+    "alerts_fired": 33,
+    "false_alert_share": 0.06060606060606061,
+    "lead_median": 16.0,
+    "lead_p10": 11.0,
+    "lead_p90": 22.0
+   },
+   "rul_last_cycle": {
+    "rmse": 12.660880285597878,
+    "mae": 8.278982810147943,
+    "nasa_score": 888.1207834989448
+   },
+   "rul_all_cycles": {
+    "rmse": 11.14972055329463,
+    "mae": 5.782537389191392,
+    "nasa_score": 261278.05242421202
+   },
+   "watch_cycle_false_rate": 0.01641875965211737
+  }
+ }
+]
